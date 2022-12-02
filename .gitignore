@@ -2,5 +2,4 @@
 bin/
 obj/
 
-input/
-!input/**/example.txt
+input.txt

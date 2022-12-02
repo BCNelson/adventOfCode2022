@@ -8,10 +8,11 @@ fi
 # check if a second argument is given
 if [ $# -eq 2 ]; then
     args=$(readlink -f "$2")
-    echo "Using input file: $args"
 else
-    args=""
+    args=$(readlink -f "$1"/exampleInput.txt)
 fi
+
+echo "Using input file: $args"
 
 # change to the directory of this script
 pushd "$(dirname "$0")" > /dev/null || exit 2
