@@ -7,6 +7,12 @@ class Day2 {
         unknown
     }
 
+    enum Outcome {
+        win,
+        lose,
+        draw
+    }
+
     static Choice ConvertChoice(string choice) {
 
         if (choice == "A" || choice == "X") {
@@ -17,6 +23,17 @@ class Day2 {
             return Choice.scissors;
         }
         throw new Exception("Invalid choice");
+    }
+
+    static Outcome ConvertOutcome(string outcome) {
+        if (outcome == "Z") {
+            return Outcome.win;
+        } else if (outcome == "X") {
+            return Outcome.lose;
+        } else if (outcome == "Y") {
+            return Outcome.draw;
+        }
+        throw new Exception("Invalid outcome");
     }
     static int ScoreMatch(Choice OpponentChoice, Choice MyChoice) {
         if (OpponentChoice == MyChoice) {
@@ -31,9 +48,46 @@ class Day2 {
             return 0; // Lose
         }
     }
+    static int ScoreMyChoice(Choice MyChoice) {
+        switch (MyChoice) {
+                case Choice.rock:
+                    return 1;
+                case Choice.paper:
+                    return 2;
+                case Choice.scissors:
+                    return 3;
+                default:
+                    throw new Exception("Invalid choice");
+            }
+    }
+
+    static Choice Part2Choice(Choice OpponentChoice, Outcome outcome) {
+        if (outcome == Outcome.win) {
+            if (OpponentChoice == Choice.rock) {
+                return Choice.paper;
+            } else if (OpponentChoice == Choice.paper) {
+                return Choice.scissors;
+            } else if (OpponentChoice == Choice.scissors) {
+                return Choice.rock;
+            }
+        } else if (outcome == Outcome.lose) {
+            if (OpponentChoice == Choice.rock) {
+                return Choice.scissors;
+            } else if (OpponentChoice == Choice.paper) {
+                return Choice.rock;
+            } else if (OpponentChoice == Choice.scissors) {
+                return Choice.paper;
+            }
+        } else if (outcome == Outcome.draw) {
+            return OpponentChoice;
+        }
+        throw new Exception("Invalid choice");
+    }
+
     static void Main(string[] args) {
         StreamReader file = new StreamReader(args[0]);
-        int Score = 0;
+        int ScorePart1 = 0;
+        int ScorePart2 = 0;
         while (!file.EndOfStream) {
             string? line = file.ReadLine();
             if (line == null) {
@@ -42,23 +96,16 @@ class Day2 {
             }
             string[] choices = line.Split(' ');
             Choice OpponentChoice = ConvertChoice(choices[0]);
-            Choice MyChoice = ConvertChoice(choices[1]);
-            Score += ScoreMatch(OpponentChoice, MyChoice);
-            switch (MyChoice) {
-                case Choice.rock:
-                    Score += 1;
-                    break;
-                case Choice.paper:
-                    Score += 2;
-                    break;
-                case Choice.scissors:
-                    Score += 3;
-                    break;
-                default:
-                    Console.WriteLine("Error");
-                    break;
-            }
+            Choice MyChoicePart1 = ConvertChoice(choices[1]);
+            ScorePart1 += ScoreMatch(OpponentChoice, MyChoicePart1);
+            ScorePart1 += ScoreMyChoice(MyChoicePart1);
+            Outcome outcome = ConvertOutcome(choices[1]);
+            Choice MyChoicePart2 = Part2Choice(OpponentChoice, outcome);
+            ScorePart2 += ScoreMatch(OpponentChoice, MyChoicePart2);
+            ScorePart2 += ScoreMyChoice(MyChoicePart2);
         }
-        Console.WriteLine(Score);
+        Console.WriteLine("Part 1:" + ScorePart1);
+        Console.WriteLine("Part 2:" + ScorePart2);
+        file.Close();
     }
 }
